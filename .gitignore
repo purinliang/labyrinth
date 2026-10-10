@@ -1,5 +1,6 @@
 # Java Backend
 backend/out/
+backend/target/
 
 # IDE
 .vscode/
