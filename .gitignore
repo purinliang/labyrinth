@@ -1,0 +1,9 @@
+# Java Backend
+backend/out/
+
+# IDE
+.vscode/
+
+# Local environment
+**/.env
+**/.env.local
