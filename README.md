@@ -107,3 +107,21 @@ mvn -f backend/pom.xml spotless:check checkstyle:check
 The lint rules are in `backend/config/checkstyle.xml`. Checkstyle runs
 during Maven's `validate` phase; Spotless checks run during `verify`.
 Use these commands as the source of truth for formatting.
+
+## Automated tests
+
+```sh
+mvn -f backend/pom.xml verify
+```
+
+The API tests use Spring Boot and MockMvc with the real application
+components, without opening a network port. They cover experiment
+creation and lookup, the `Location` header with a context path, invalid
+names and IDs, malformed JSON, unknown IDs, and greeting regressions.
+They use returned IDs rather than assuming test execution order.
+
+The repository concurrency test starts eight workers together and
+checks that all 800 experiments have unique IDs and remain retrievable.
+It uses bounded waits and shuts down its executor after the test.
+
+For a faster test-only run, use `mvn -f backend/pom.xml test`.
