@@ -1,4 +1,4 @@
-package dev.labyrinth;
+package dev.labyrinth.hello;
 
 import jakarta.validation.Valid;
 

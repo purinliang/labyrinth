@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles version="23">
+    <profile kind="CodeFormatterProfile"
+             name="Labyrinth" version="23">
+        <setting
+            id="org.eclipse.jdt.core.formatter.tabulation.char"
+            value="space"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.tabulation.size"
+            value="4"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.indentation.size"
+            value="4"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.continuation_indentation"
+            value="2"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.lineSplit"
+            value="79"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.alignment_for_assignment"
+            value="16"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.wrap_before_assignment_operator"
+            value="false"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.comment.line_length"
+            value="79"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.join_wrapped_lines"
+            value="true"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.blank_lines_at_beginning_of_method_body"
+            value="0"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration"
+            value="1"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.blank_lines_before_method"
+            value="1"/>
+        <setting
+            id="org.eclipse.jdt.core.formatter.blank_lines_between_import_groups"
+            value="1"/>
+    </profile>
+</profiles>

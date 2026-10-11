@@ -67,3 +67,25 @@ return HTTP 400 with `{"message":"Invalid argument"}`.
 
 Spring Boot DevTools is enabled for local development and is excluded
 from the packaged application.
+
+## Java formatting and lint
+
+Spotless uses the Eclipse JDT formatter with the shared profile in
+`backend/config/eclipse-formatter.xml`. It uses four spaces and wraps at
+79 columns. It also sorts imports and removes unused imports.
+
+Apply formatting:
+
+```sh
+mvn -f backend/pom.xml spotless:apply
+```
+
+Check formatting and run Checkstyle without compiling:
+
+```sh
+mvn -f backend/pom.xml spotless:check checkstyle:check
+```
+
+The lint rules are in `backend/config/checkstyle.xml`. Checkstyle runs
+during Maven's `validate` phase; Spotless checks run during `verify`.
+Use these commands as the source of truth for formatting.
