@@ -61,3 +61,9 @@ Expected response: `{"message":"Hello, Labyrinth!"}`.
 To provide a name, use `GET /api/hello?name=Alice`, `GET /api/hello/Alice`, or `POST /api/hello` with a JSON body such as `{"name":"Alice"}` and `Content-Type: application/json`. Request examples are available in [backend/request.http](backend/request.http).
 
 Build and run available tests with `mvn -f backend/pom.xml verify`.
+
+POST greetings require a nonblank `name`. Missing, null, or blank names
+return HTTP 400 with `{"message":"Invalid argument"}`.
+
+Spring Boot DevTools is enabled for local development and is excluded
+from the packaged application.

@@ -1,4 +1,6 @@
 package dev.labyrinth;
 
-public record HelloRequest(String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record HelloRequest(@NotBlank String name) {
 }

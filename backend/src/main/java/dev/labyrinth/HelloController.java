@@ -1,5 +1,7 @@
 package dev.labyrinth;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +19,8 @@ public class HelloController {
     }
 
     @GetMapping("/api/hello")
-    public HelloResponse greetByQuery(@RequestParam(defaultValue = "Labyrinth") String name) {
+    public HelloResponse greetByQuery(
+            @RequestParam(defaultValue = "Labyrinth") String name) {
         return new HelloResponse(service.getMessage(name));
     }
 
@@ -27,7 +30,8 @@ public class HelloController {
     }
 
     @PostMapping("/api/hello")
-    public HelloResponse greetByBody(@RequestBody HelloRequest request) {
+    public HelloResponse greetByBody(
+            @Valid @RequestBody HelloRequest request) {
         return new HelloResponse(service.getMessage(request.name()));
     }
 }
