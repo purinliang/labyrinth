@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
+    private final HelloService service;
 
-    public record HelloResponse(String message) {
+    public HelloController(HelloService service) {
+        this.service = service;
     }
 
     @GetMapping("/api/hello")
     public HelloResponse getMethod() {
-        return new HelloResponse("Hello, Labyrinth!");
+        return new HelloResponse(service.getMessage());
     }
 }
