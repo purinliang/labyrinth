@@ -1,0 +1,17 @@
+### Default greeting
+GET http://localhost:8080/api/hello
+Accept: application/json
+
+### Greeting by query parameter
+GET http://localhost:8080/api/hello?name=Alice1
+
+### Greeting by path variable
+GET http://localhost:8080/api/hello/Alice2
+
+### Greeting by JSON body
+POST http://localhost:8080/api/hello
+Content-Type: application/json
+
+{
+    "name": "Alice3"
+}

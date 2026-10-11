@@ -40,7 +40,7 @@ labyrinth/
 
 ## Status
 
-The project is in early development. The backend has a Spring Boot application with a `GET /api/hello` endpoint. Experiment execution, the frontend, workers, and infrastructure are still planned.
+The project is in early development. The backend has a Spring Boot application with greeting endpoints that accept names through query parameters, path variables, or a JSON body. Experiment execution, the frontend, workers, and infrastructure are still planned.
 
 ## Run the backend
 
@@ -57,5 +57,7 @@ curl http://localhost:8080/api/hello
 ```
 
 Expected response: `{"message":"Hello, Labyrinth!"}`.
+
+To provide a name, use `GET /api/hello?name=Alice`, `GET /api/hello/Alice`, or `POST /api/hello` with a JSON body such as `{"name":"Alice"}` and `Content-Type: application/json`. Request examples are available in [backend/request.http](backend/request.http).
 
 Build and run available tests with `mvn -f backend/pom.xml verify`.
