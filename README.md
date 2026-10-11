@@ -40,7 +40,10 @@ labyrinth/
 
 ## Status
 
-The project is in early development. The backend has a Spring Boot application with greeting endpoints that accept names through query parameters, path variables, or a JSON body. Experiment execution, the frontend, workers, and infrastructure are still planned.
+The project is in early development. The Spring Boot backend provides
+greeting endpoints and experiment creation and lookup in memory.
+Experiment execution, persistent storage, the frontend, workers, and
+infrastructure are still planned.
 
 ## Run the backend
 
@@ -58,7 +61,10 @@ curl http://localhost:8080/api/hello
 
 Expected response: `{"message":"Hello, Labyrinth!"}`.
 
-To provide a name, use `GET /api/hello?name=Alice`, `GET /api/hello/Alice`, or `POST /api/hello` with a JSON body such as `{"name":"Alice"}` and `Content-Type: application/json`. Request examples are available in [backend/request.http](backend/request.http).
+To provide a name, use `GET /api/hello?name=Alice`,
+`GET /api/hello/Alice`, or `POST /api/hello` with a JSON body such as
+`{"name":"Alice"}` and `Content-Type: application/json`. Request examples
+are available in [hello.http](backend/requests/hello.http).
 
 Build and run available tests with `mvn -f backend/pom.xml verify`.
 
@@ -67,6 +73,18 @@ return HTTP 400 with `{"message":"Invalid argument"}`.
 
 Spring Boot DevTools is enabled for local development and is excluded
 from the packaged application.
+
+## Experiment API
+
+`POST /api/experiments` accepts a JSON body such as `{"name":"Demo"}`.
+It returns HTTP 201 with an ID, name, `PENDING` status, and a `Location`
+header pointing to `GET /api/experiments/{id}`. Lookup returns HTTP 200
+for an existing experiment or HTTP 404 for an unknown ID. Missing,
+null, or blank names return HTTP 400.
+
+Experiments are currently stored in memory and are lost on restart.
+Execution and persistent storage are still planned. Request examples
+are in [experiments.http](backend/requests/experiments.http).
 
 ## Java formatting and lint
 

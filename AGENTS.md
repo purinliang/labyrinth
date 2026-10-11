@@ -8,5 +8,5 @@ Labyrinth is a scientific research platform with a Java Spring Boot backend, a R
 - Push live progress to the frontend and publish an experiment completion event through RabbitMQ for future consumers.
 - Keep notification consumers independent of experiment execution.
 - Keep changes focused, document setup when adding components, and run relevant checks when available.
-- The repository currently contains documentation and directory placeholders. Do not describe planned features as implemented.
+- The backend has greeting endpoints and in-memory experiment creation and lookup. Execution, persistence, the frontend, workers, and infrastructure remain planned. Do not describe planned features as implemented.
 - The user develops the source code. Help with review, formatting, and commits when requested; do not implement features unless explicitly asked.
