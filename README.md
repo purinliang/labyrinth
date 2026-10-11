@@ -40,4 +40,22 @@ labyrinth/
 
 ## Status
 
-The project is in the design stage; this repository currently contains documentation and directory placeholders. The structure above describes the planned layout, using React + TypeScript with Vite, Java + Spring Boot, Python workers, PostgreSQL, and RabbitMQ.
+The project is in early development. The backend has a Spring Boot application with a `GET /api/hello` endpoint. Experiment execution, the frontend, workers, and infrastructure are still planned.
+
+## Run the backend
+
+Requires Java 21 and Maven.
+
+```sh
+mvn -f backend/pom.xml spring-boot:run
+```
+
+Check the endpoint:
+
+```sh
+curl http://localhost:8080/api/hello
+```
+
+Expected response: `{"message":"Hello, Labyrinth!"}`.
+
+Build and run available tests with `mvn -f backend/pom.xml verify`.
