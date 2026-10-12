@@ -30,7 +30,7 @@ public class ExperimentController {
 
         ExperimentResponse response = ExperimentResponse.from(experiment);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}").buildAndExpand(experiment.id()).toUri();
+                .path("/{id}").buildAndExpand(experiment.getId()).toUri();
 
         return ResponseEntity.created(location).body(response);
     }

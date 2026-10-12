@@ -41,11 +41,11 @@ labyrinth/
 ## Status
 
 The project is in early development. The Spring Boot backend provides
-greeting endpoints and experiment creation and lookup in memory.
+greeting endpoints and experiment creation and lookup through JPA.
 Local PostgreSQL is available through Docker Compose. The backend
 connects to PostgreSQL and applies Flyway schema migrations on startup.
-Database-backed experiment storage, execution, the frontend, workers,
-and RabbitMQ are still planned.
+Experiments are persisted in PostgreSQL. Execution, the frontend,
+workers, and RabbitMQ are still planned.
 
 ## Local PostgreSQL
 
@@ -56,14 +56,14 @@ cp .env.example .env
 ```
 
 Set `POSTGRES_PASSWORD` in `.env` to your local development password.
-If port 5432 is occupied, change `POSTGRES_PORT` in the same file.
+If port 15432 is occupied, change `POSTGRES_PORT` in the same file.
 
 ```sh
 docker compose up -d --wait postgres
 ```
 
 `POSTGRES_DB` and `POSTGRES_USER` default to `labyrinth` in the example.
-PostgreSQL is available on `127.0.0.1`, using `POSTGRES_PORT` (5432 in
+PostgreSQL is available on `127.0.0.1`, using `POSTGRES_PORT` (15432 in
 the example). Data is stored in the `postgres_data` Docker volume.
 `.env` is ignored by Git.
 
@@ -82,8 +82,7 @@ docker compose down
 
 Database credentials initialize a new volume only. Changing `.env`
 does not update the password of an existing database. The backend
-connects to PostgreSQL, but experiment records still use the in-memory
-repository.
+persists experiment records in PostgreSQL through Spring Data JPA.
 
 ## Run the backend
 
@@ -134,8 +133,9 @@ header pointing to `GET /api/experiments/{id}`. Lookup returns HTTP 200
 for an existing experiment or HTTP 404 for an unknown ID. Missing,
 null, or blank names return HTTP 400.
 
-Experiments are currently stored in memory and are lost on restart.
-Execution and persistent storage are still planned. Request examples
+Experiments are stored in PostgreSQL and survive backend restarts.
+Flyway manages the schema; Hibernate validates it without modifying it.
+Execution is still planned. Request examples
 are in [experiments.http](backend/requests/experiments.http).
 
 ## Java formatting and lint
@@ -167,15 +167,18 @@ mvn -f backend/pom.xml verify
 ```
 
 The API tests use Spring Boot and MockMvc with the real application
-components, without opening a network port. Their `test` profile disables
-JDBC and Flyway auto-configuration, so PostgreSQL and database credentials
-are not required for `mvn verify`. They cover experiment
+components. Tests require a running Docker daemon accessible to the
+current user. Testcontainers starts an isolated PostgreSQL 17 instance
+on a random port; no `.env` or existing database is used. Spring manages
+the container lifecycle and supplies its connection details to the
+test application. Flyway runs the production migrations and Hibernate
+validates the resulting schema. The tests cover experiment
 creation and lookup, the `Location` header with a context path, invalid
 names and IDs, malformed JSON, unknown IDs, and greeting regressions.
 They use returned IDs rather than assuming test execution order.
 
-The repository concurrency test starts eight workers together and
-checks that all 800 experiments have unique IDs and remain retrievable.
-It uses bounded waits and shuts down its executor after the test.
+Persistence tests check generated IDs, independent records with duplicate
+names, reloads through a fresh JPA persistence context, committed SQL data,
+and repeat Flyway execution without data loss.
 
 For a faster test-only run, use `mvn -f backend/pom.xml test`.

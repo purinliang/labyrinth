@@ -12,10 +12,10 @@ public class ExperimentService {
     }
 
     public Experiment createExperiment(String name) {
-        return repository.create(name);
+        return repository.save(new Experiment(name));
     }
 
     public Experiment getExperiment(long id) {
-        return repository.findById(id);
+        return repository.findById(id).orElse(null);
     }
 }
