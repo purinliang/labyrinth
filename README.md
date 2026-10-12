@@ -41,7 +41,7 @@ labyrinth/
 ## Status
 
 The project is in early development. The Spring Boot backend provides
-greeting endpoints and experiment creation and lookup through JPA.
+experiment creation and lookup through JPA.
 Local PostgreSQL is available through Docker Compose. The backend
 connects to PostgreSQL and applies Flyway schema migrations on startup.
 Experiments are persisted in PostgreSQL. Execution, the frontend,
@@ -104,23 +104,18 @@ versioned migrations from `backend/src/main/resources/db/migration`.
 Do not edit a migration after applying it to a persistent database;
 add a new version instead.
 
-Check the endpoint:
+Create an experiment:
 
 ```sh
-curl http://localhost:8080/api/hello
+curl -i http://localhost:8080/api/experiments \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Demo"}'
 ```
 
-Expected response: `{"message":"Hello, Labyrinth!"}`.
-
-To provide a name, use `GET /api/hello?name=Alice`,
-`GET /api/hello/Alice`, or `POST /api/hello` with a JSON body such as
-`{"name":"Alice"}` and `Content-Type: application/json`. Request examples
-are available in [hello.http](backend/requests/hello.http).
+The response is HTTP 201 with the experiment data and a `Location`
+header for retrieving it. See the experiment API below for details.
 
 Build and run available tests with `mvn -f backend/pom.xml verify`.
-
-POST greetings require a nonblank `name`. Missing, null, or blank names
-return HTTP 400 with `{"message":"Invalid argument"}`.
 
 Spring Boot DevTools is enabled for local development and is excluded
 from the packaged application.
@@ -174,7 +169,7 @@ the container lifecycle and supplies its connection details to the
 test application. Flyway runs the production migrations and Hibernate
 validates the resulting schema. The tests cover experiment
 creation and lookup, the `Location` header with a context path, invalid
-names and IDs, malformed JSON, unknown IDs, and greeting regressions.
+names and IDs, malformed JSON, and unknown IDs.
 They use returned IDs rather than assuming test execution order.
 
 Persistence tests check generated IDs, independent records with duplicate
