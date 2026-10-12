@@ -10,9 +10,8 @@ public class PostgresTestConfiguration {
 
     @Bean
     PostgreSQLContainer postgres() {
-        return new PostgreSQLContainer("postgres:17")
-                .withDatabaseName("labyrinth_test")
-                .withUsername("labyrinth_test").withPassword("labyrinth_test");
+        // Spring Boot owns the bean and stops it when the context closes.
+        return new PostgreSQLContainer("postgres:17");
     }
 
     @Bean
