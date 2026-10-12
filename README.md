@@ -42,8 +42,44 @@ labyrinth/
 
 The project is in early development. The Spring Boot backend provides
 greeting endpoints and experiment creation and lookup in memory.
-Experiment execution, persistent storage, the frontend, workers, and
-infrastructure are still planned.
+Local PostgreSQL is available through Docker Compose. Backend database
+integration, experiment execution, the frontend, workers, and RabbitMQ
+are still planned.
+
+## Local PostgreSQL
+
+Requires Docker with Docker Compose. From the repository root:
+
+```sh
+cp .env.example .env
+```
+
+Set `POSTGRES_PASSWORD` in `.env` to your local development password.
+If port 5432 is occupied, change `POSTGRES_PORT` in the same file.
+
+```sh
+docker compose up -d --wait postgres
+```
+
+The `labyrinth` database and user are available on `127.0.0.1`, using
+`POSTGRES_PORT` (5432 by default). Data is stored in the `postgres_data`
+Docker volume. `.env` is ignored by Git.
+
+Open a SQL shell:
+
+```sh
+docker compose exec postgres psql -U labyrinth -d labyrinth
+```
+
+Stop PostgreSQL while keeping its data:
+
+```sh
+docker compose down
+```
+
+Database credentials initialize a new volume only. Changing `.env`
+does not update the password of an existing database. The backend
+currently uses its in-memory repository and is not connected to PostgreSQL.
 
 ## Run the backend
 
