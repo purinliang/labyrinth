@@ -42,9 +42,10 @@ labyrinth/
 
 The project is in early development. The Spring Boot backend provides
 greeting endpoints and experiment creation and lookup in memory.
-Local PostgreSQL is available through Docker Compose. Backend database
-integration, experiment execution, the frontend, workers, and RabbitMQ
-are still planned.
+Local PostgreSQL is available through Docker Compose. The backend
+connects to PostgreSQL and applies Flyway schema migrations on startup.
+Database-backed experiment storage, execution, the frontend, workers,
+and RabbitMQ are still planned.
 
 ## Local PostgreSQL
 
@@ -61,14 +62,16 @@ If port 5432 is occupied, change `POSTGRES_PORT` in the same file.
 docker compose up -d --wait postgres
 ```
 
-The `labyrinth` database and user are available on `127.0.0.1`, using
-`POSTGRES_PORT` (5432 by default). Data is stored in the `postgres_data`
-Docker volume. `.env` is ignored by Git.
+`POSTGRES_DB` and `POSTGRES_USER` default to `labyrinth` in the example.
+PostgreSQL is available on `127.0.0.1`, using `POSTGRES_PORT` (5432 in
+the example). Data is stored in the `postgres_data` Docker volume.
+`.env` is ignored by Git.
 
 Open a SQL shell:
 
 ```sh
-docker compose exec postgres psql -U labyrinth -d labyrinth
+docker compose exec postgres sh -c \
+  'exec psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 ```
 
 Stop PostgreSQL while keeping its data:
@@ -79,15 +82,28 @@ docker compose down
 
 Database credentials initialize a new volume only. Changing `.env`
 does not update the password of an existing database. The backend
-currently uses its in-memory repository and is not connected to PostgreSQL.
+connects to PostgreSQL, but experiment records still use the in-memory
+repository.
 
 ## Run the backend
 
-Requires Java 21 and Maven.
+Requires Java 21, Maven, and a running PostgreSQL instance. Compose
+reads `.env` automatically, but the Java application does not. Use
+shell-compatible assignments in `.env`; quote values containing shell
+special characters. From the repository root, export its values:
 
 ```sh
+set -a
+. ./.env
+set +a
 mvn -f backend/pom.xml spring-boot:run
 ```
+
+`POSTGRES_HOST` is the database host seen by the Java process; use
+`localhost` when running the backend on the host. Flyway applies
+versioned migrations from `backend/src/main/resources/db/migration`.
+Do not edit a migration after applying it to a persistent database;
+add a new version instead.
 
 Check the endpoint:
 
@@ -151,7 +167,9 @@ mvn -f backend/pom.xml verify
 ```
 
 The API tests use Spring Boot and MockMvc with the real application
-components, without opening a network port. They cover experiment
+components, without opening a network port. Their `test` profile disables
+JDBC and Flyway auto-configuration, so PostgreSQL and database credentials
+are not required for `mvn verify`. They cover experiment
 creation and lookup, the `Location` header with a context path, invalid
 names and IDs, malformed JSON, unknown IDs, and greeting regressions.
 They use returned IDs rather than assuming test execution order.
