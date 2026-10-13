@@ -84,7 +84,31 @@ Database credentials initialize a new volume only. Changing `.env`
 does not update the password of an existing database. The backend
 persists experiment records in PostgreSQL through Spring Data JPA.
 
-## Run the backend
+## Run with Docker Compose
+
+After setting up `.env`, build and start the backend and PostgreSQL:
+
+```sh
+docker compose up -d --build
+docker compose logs -f backend
+```
+
+Wait for the backend's startup message, then use the experiment API at
+`http://localhost:8080`. The backend connects to `postgres:5432` on the
+Compose network. `POSTGRES_PORT` controls the published database port
+for host tools; `POSTGRES_HOST` is used when running Java locally.
+PostgreSQL must be healthy before the backend starts. The backend image
+runs as a non-root user.
+
+Rebuild after changing backend code with `docker compose up -d --build`.
+Stop the stack with `docker compose down`; its database volume is kept.
+
+The multi-stage image build compiles the application and runs Checkstyle
+and Spotless checks. It skips Testcontainers tests; run
+`mvn -f backend/pom.xml verify` separately with Docker available before
+building the image.
+
+## Run the backend locally
 
 Requires Java 21, Maven, and a running PostgreSQL instance. Compose
 reads `.env` automatically, but the Java application does not. Use
