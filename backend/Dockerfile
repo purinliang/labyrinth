@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # Build Spring Boot application
 FROM maven:3.9-eclipse-temurin-21 AS build
 
@@ -8,7 +10,8 @@ COPY config ./config
 COPY src ./src
 
 # Testcontainers tests run separately where Docker is available.
-RUN mvn -B -DskipTests verify
+RUN --mount=type=cache,target=/root/.m2/repository,sharing=locked \
+    mvn -B -DskipTests verify
 
 # Run Spring Boot application
 FROM eclipse-temurin:21-jre
