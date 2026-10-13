@@ -46,7 +46,7 @@ class ExperimentPersistenceTest {
                     connection.getMetaData().getDatabaseProductName());
         }
         flyway.validate();
-        assertEquals("1", flyway.info().current().getVersion().getVersion());
+        assertEquals(0, flyway.info().pending().length);
         assertEquals(1,
                 jdbc.queryForObject(
                         "SELECT COUNT(*) FROM flyway_schema_history "
