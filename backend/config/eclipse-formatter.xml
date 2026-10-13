@@ -21,6 +21,9 @@
             id="org.eclipse.jdt.core.formatter.alignment_for_assignment"
             value="16"/>
         <setting
+            id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation"
+            value="16"/>
+        <setting
             id="org.eclipse.jdt.core.formatter.wrap_before_assignment_operator"
             value="false"/>
         <setting
