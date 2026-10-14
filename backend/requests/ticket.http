@@ -1,0 +1,39 @@
+# Replace currentTeamId with an existing team's ID.
+@currentTeamId = 1
+
+### Create a ticket (201 Created)
+# @name createTicket
+POST http://localhost:8080/api/tickets
+Content-Type: application/json
+
+{
+    "title": "Experiment failed",
+    "content": "Investigate the worker logs.",
+    "currentTeamId": {{currentTeamId}}
+}
+
+### Fetch the created ticket (200 OK)
+GET {{createTicket.response.headers.Location}}
+
+### Unknown ticket (404 Not Found)
+GET http://localhost:8080/api/tickets/0
+
+### Unknown team (404 Not Found)
+POST http://localhost:8080/api/tickets
+Content-Type: application/json
+
+{
+    "title": "Demo",
+    "content": "Content",
+    "currentTeamId": 9223372036854775807
+}
+
+### Reject a blank title (400 Bad Request)
+POST http://localhost:8080/api/tickets
+Content-Type: application/json
+
+{
+    "title": "",
+    "content": "Content",
+    "currentTeamId": {{currentTeamId}}
+}

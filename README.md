@@ -185,6 +185,18 @@ or blank names and missing, null, or nonpositive team IDs return HTTP 400.
 Users are persisted in PostgreSQL. Request examples are available in
 [user.http](backend/requests/user.http).
 
+## Ticket API
+
+`POST /api/tickets` accepts `title`, `content`, and `currentTeamId`.
+It returns HTTP 201 with a `Location` header for `GET /api/tickets/{id}`.
+The response includes the ticket's ID, title, content, `OPEN` status,
+current team ID, initial version (0), and database-generated `createdAt`.
+Lookup returns HTTP 200 or HTTP 404 for an unknown ticket. Creation with
+an unknown team returns HTTP 404. Missing, null, or blank title/content
+and missing, null, or nonpositive team IDs return HTTP 400.
+
+Request examples are in [ticket.http](backend/requests/ticket.http).
+
 ## Java formatting and lint
 
 Spotless uses the Eclipse JDT formatter with the shared profile in

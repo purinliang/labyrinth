@@ -19,7 +19,6 @@ public class TicketService {
 
     public Ticket createTicket(String title, String content, long teamId) {
         Team team = teamRepository.findById(teamId).orElse(null);
-
         if (team == null) {
             return null;
         }
