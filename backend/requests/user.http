@@ -1,0 +1,36 @@
+# Replace teamId with an existing team's ID.
+@teamId = 1
+
+### Create a user (201 Created)
+# @name createUser
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+    "name": "Researcher",
+    "teamId": {{teamId}}
+}
+
+### Fetch the created user (200 OK)
+GET {{createUser.response.headers.Location}}
+
+### Unknown user (404 Not Found)
+GET http://localhost:8080/api/users/0
+
+### Unknown team (404 Not Found)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+    "name": "Researcher",
+    "teamId": 9223372036854775807
+}
+
+### Reject a blank name (400 Bad Request)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+    "name": "",
+    "teamId": {{teamId}}
+}

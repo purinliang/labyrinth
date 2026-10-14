@@ -173,6 +173,18 @@ HTTP 400. Team names are not required to be unique.
 Teams are persisted in PostgreSQL. Request examples are available in
 [team.http](backend/requests/team.http).
 
+## User API
+
+`POST /api/users` accepts a name and an existing team's ID, for example
+`{"name":"Researcher","teamId":1}`. It returns HTTP 201 with the user's
+ID, name, and `teamId`, plus a `Location` header for `GET /api/users/{id}`.
+Lookup returns HTTP 200 for an existing user or HTTP 404 for an unknown
+ID. Creation with an unknown team also returns HTTP 404. Missing, null,
+or blank names and missing, null, or nonpositive team IDs return HTTP 400.
+
+Users are persisted in PostgreSQL. Request examples are available in
+[user.http](backend/requests/user.http).
+
 ## Java formatting and lint
 
 Spotless uses the Eclipse JDT formatter with the shared profile in
