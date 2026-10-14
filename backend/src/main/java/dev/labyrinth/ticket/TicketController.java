@@ -32,10 +32,11 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
 
+        TicketResponse response = TicketResponse.from(ticket);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(ticket.getId()).toUri();
-        return ResponseEntity.created(location)
-                .body(TicketResponse.from(ticket));
+
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/{id}")

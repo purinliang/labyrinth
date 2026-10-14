@@ -39,7 +39,6 @@ public class ExperimentController {
     public ResponseEntity<ExperimentResponse> getExperiment(
             @PathVariable long id) {
         Experiment experiment = service.getExperiment(id);
-
         if (experiment == null) {
             return ResponseEntity.notFound().build();
         }

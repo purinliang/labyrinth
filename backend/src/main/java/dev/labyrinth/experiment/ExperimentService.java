@@ -15,6 +15,9 @@ public class ExperimentService {
         return repository.save(new Experiment(name));
     }
 
+    /**
+     * Returns the experiment, or null when it does not exist.
+     */
     public Experiment getExperiment(long id) {
         return repository.findById(id).orElse(null);
     }

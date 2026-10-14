@@ -32,10 +32,11 @@ public class CommentController {
             return ResponseEntity.notFound().build();
         }
 
+        CommentResponse response = CommentResponse.from(comment);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(comment.getId()).toUri();
-        return ResponseEntity.created(location)
-                .body(CommentResponse.from(comment));
+
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/{id}")

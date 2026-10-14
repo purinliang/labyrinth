@@ -38,7 +38,6 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<TeamResponse> getTeam(@PathVariable long id) {
         Team team = service.getTeam(id);
-
         if (team == null) {
             return ResponseEntity.notFound().build();
         }

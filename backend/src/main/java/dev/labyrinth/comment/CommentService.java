@@ -21,6 +21,10 @@ public class CommentService {
         this.ticketRepository = ticketRepository;
     }
 
+    /**
+     * Returns the saved comment, or null if the author or ticket does not
+     * exist.
+     */
     public Comment createComment(String content, long authorId,
             long ticketId) {
         User author = userRepository.findById(authorId).orElse(null);
@@ -36,6 +40,9 @@ public class CommentService {
         return repository.save(new Comment(content, author, ticket));
     }
 
+    /**
+     * Returns the comment, or null when it does not exist.
+     */
     public Comment getComment(long id) {
         return repository.findById(id).orElse(null);
     }

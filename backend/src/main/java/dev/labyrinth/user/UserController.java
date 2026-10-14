@@ -27,7 +27,6 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(
             @Valid @RequestBody CreateUserRequest request) {
         User user = service.createUser(request.name(), request.teamId());
-
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -42,7 +41,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUser(@PathVariable long id) {
         User user = service.getUser(id);
-
         if (user == null) {
             return ResponseEntity.notFound().build();
         }

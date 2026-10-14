@@ -17,9 +17,11 @@ public class UserService {
         this.teamRepository = teamRepository;
     }
 
+    /**
+     * Returns the saved user, or null if the team does not exist.
+     */
     public User createUser(String name, long teamId) {
         Team team = teamRepository.findById(teamId).orElse(null);
-
         if (team == null) {
             return null;
         }
@@ -27,6 +29,9 @@ public class UserService {
         return repository.save(new User(name, team));
     }
 
+    /**
+     * Returns the user, or null when it does not exist.
+     */
     public User getUser(long id) {
         return repository.findById(id).orElse(null);
     }

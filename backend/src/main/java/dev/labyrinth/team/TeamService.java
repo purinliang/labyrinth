@@ -15,6 +15,9 @@ public class TeamService {
         return repository.save(new Team(name));
     }
 
+    /**
+     * Returns the team, or null when it does not exist.
+     */
     public Team getTeam(long id) {
         return repository.findById(id).orElse(null);
     }

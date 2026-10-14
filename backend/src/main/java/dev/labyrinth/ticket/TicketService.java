@@ -17,6 +17,9 @@ public class TicketService {
         this.teamRepository = teamRepository;
     }
 
+    /**
+     * Returns the saved ticket, or null if the team does not exist.
+     */
     public Ticket createTicket(String title, String content, long teamId) {
         Team team = teamRepository.findById(teamId).orElse(null);
         if (team == null) {
@@ -26,6 +29,9 @@ public class TicketService {
         return repository.save(new Ticket(title, content, team));
     }
 
+    /**
+     * Returns the ticket, or null when it does not exist.
+     */
     public Ticket getTicket(long id) {
         return repository.findById(id).orElse(null);
     }

@@ -41,10 +41,11 @@ labyrinth/
 ## Status
 
 The project is in early development. The Spring Boot backend provides
-experiment creation and lookup through JPA.
+creation and lookup for experiments, teams, users, tickets, and comments
+through JPA.
 Local PostgreSQL is available through Docker Compose. The backend
 connects to PostgreSQL and applies Flyway schema migrations on startup.
-Experiments are persisted in PostgreSQL. Execution, the frontend,
+Records are persisted in PostgreSQL. Execution, the frontend,
 workers, and RabbitMQ are still planned.
 
 ## Local PostgreSQL
@@ -231,6 +232,11 @@ The lint rules are in `backend/config/checkstyle.xml`. Checkstyle runs
 during Maven's `validate` phase; Spotless checks run during `verify`.
 Use these commands as the source of truth for formatting.
 
+Put a null check directly after its lookup or service call, with no blank
+line in between. The formatter preserves this layout. Services return
+`null` for missing records or required references, and controllers map
+that result to HTTP 404. Nullable service results are documented.
+
 ## Automated tests
 
 ```sh
@@ -243,13 +249,17 @@ current user. Testcontainers starts an isolated PostgreSQL 17 instance
 on a random port; no `.env` or existing database is used. Spring manages
 the container lifecycle and supplies its connection details to the
 test application. Flyway runs the production migrations and Hibernate
-validates the resulting schema. The tests cover experiment
-creation and lookup, the `Location` header with a context path, invalid
-names and IDs, malformed JSON, and unknown IDs.
+validates the resulting schema. API tests cover experiment, team, user,
+ticket, and comment creation and lookup, `Location` headers with a
+context path, invalid request fields and IDs, and missing records or
+references. Experiment tests also cover malformed JSON. Health tests
+check the Actuator endpoint.
 They use returned IDs rather than assuming test execution order.
 
 Persistence tests check generated IDs, independent records with duplicate
 names, reloads through a fresh JPA persistence context, committed SQL data,
-and repeat Flyway execution without data loss.
+and repeat Flyway execution without data loss. Ticket and comment
+service tests cover creation, lookup, missing references, persisted
+relationships, and database-generated timestamps.
 
 For a faster test-only run, use `mvn -f backend/pom.xml test`.
