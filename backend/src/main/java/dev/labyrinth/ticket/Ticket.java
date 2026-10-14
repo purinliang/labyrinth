@@ -88,4 +88,12 @@ public class Ticket {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
+    public void close() {
+        this.status = TicketStatus.CLOSED;
+    }
+
+    public void reopen() {
+        this.status = TicketStatus.OPEN;
+    }
 }

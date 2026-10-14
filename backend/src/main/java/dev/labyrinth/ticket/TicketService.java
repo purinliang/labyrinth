@@ -1,6 +1,9 @@
 package dev.labyrinth.ticket;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import dev.labyrinth.team.Team;
 import dev.labyrinth.team.TeamRepository;
@@ -34,5 +37,53 @@ public class TicketService {
      */
     public Ticket getTicket(long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    /**
+     * Closes the ticket, rejecting missing tickets, stale versions, and
+     * already closed tickets with HTTP 404 or 409.
+     */
+    @Transactional
+    public Ticket closeTicket(long id, int expectedVersion) {
+        Ticket ticket = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Ticket not found"));
+
+        if (ticket.getVersion() != expectedVersion) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Version conflict");
+        }
+
+        if (ticket.getStatus() == TicketStatus.CLOSED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Ticket already closed");
+        }
+
+        ticket.close();
+        return ticket;
+    }
+
+    /**
+     * Reopens the ticket, rejecting missing tickets, stale versions, and
+     * already open tickets with HTTP 404 or 409.
+     */
+    @Transactional
+    public Ticket reopenTicket(long id, int expectedVersion) {
+        Ticket ticket = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Ticket not found"));
+
+        if (ticket.getVersion() != expectedVersion) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Version conflict");
+        }
+
+        if (ticket.getStatus() == TicketStatus.OPEN) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Ticket already open");
+        }
+
+        ticket.reopen();
+        return ticket;
     }
 }

@@ -48,4 +48,20 @@ public class TicketController {
 
         return ResponseEntity.ok(TicketResponse.from(ticket));
     }
+
+    @PostMapping("/{id}/close")
+    public ResponseEntity<TicketResponse> closeTicket(@PathVariable long id,
+            @Valid @RequestBody ChangeTicketStatusRequest request) {
+        Ticket ticket = service.closeTicket(id, request.expectedVersion());
+
+        return ResponseEntity.ok(TicketResponse.from(ticket));
+    }
+
+    @PostMapping("/{id}/reopen")
+    public ResponseEntity<TicketResponse> reopenTicket(@PathVariable long id,
+            @Valid @RequestBody ChangeTicketStatusRequest request) {
+        Ticket ticket = service.reopenTicket(id, request.expectedVersion());
+
+        return ResponseEntity.ok(TicketResponse.from(ticket));
+    }
 }

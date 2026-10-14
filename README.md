@@ -196,6 +196,13 @@ Lookup returns HTTP 200 or HTTP 404 for an unknown ticket. Creation with
 an unknown team returns HTTP 404. Missing, null, or blank title/content
 and missing, null, or nonpositive team IDs return HTTP 400.
 
+`POST /api/tickets/{id}/close` and `POST /api/tickets/{id}/reopen`
+accept `{"expectedVersion":0}` using the ticket's current nonnegative
+version. A successful transition returns HTTP 200 with the updated
+status and incremented version. An unknown ticket returns HTTP 404;
+a stale version, concurrent update, or already requested status returns
+HTTP 409. Missing, null, or negative versions return HTTP 400.
+
 Request examples are in [ticket.http](backend/requests/ticket.http).
 
 ## Comment API
@@ -260,6 +267,8 @@ Persistence tests check generated IDs, independent records with duplicate
 names, reloads through a fresh JPA persistence context, committed SQL data,
 and repeat Flyway execution without data loss. Ticket and comment
 service tests cover creation, lookup, missing references, persisted
-relationships, and database-generated timestamps.
+relationships, and database-generated timestamps. Ticket status tests
+cover close/reopen transitions, committed versions, rejected requests,
+and optimistic locking under concurrent transactions.
 
 For a faster test-only run, use `mvn -f backend/pom.xml test`.

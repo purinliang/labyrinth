@@ -37,3 +37,27 @@ Content-Type: application/json
     "content": "Content",
     "currentTeamId": {{currentTeamId}}
 }
+
+### Close the created ticket (200 OK; use its current version)
+POST {{createTicket.response.headers.Location}}/close
+Content-Type: application/json
+
+{
+    "expectedVersion": 0
+}
+
+### Reopen the ticket after closing (200 OK)
+POST {{createTicket.response.headers.Location}}/reopen
+Content-Type: application/json
+
+{
+    "expectedVersion": 1
+}
+
+### Reject a stale version after reopening (409 Conflict)
+POST {{createTicket.response.headers.Location}}/close
+Content-Type: application/json
+
+{
+    "expectedVersion": 0
+}
