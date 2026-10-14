@@ -27,6 +27,12 @@
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
+        <!-- Spring Boot Actuator: Application and database health -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Bean Validation: Validate request data -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

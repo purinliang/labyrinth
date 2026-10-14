@@ -89,16 +89,21 @@ persists experiment records in PostgreSQL through Spring Data JPA.
 After setting up `.env`, build and start the backend and PostgreSQL:
 
 ```sh
-docker compose up -d --build
+docker compose up -d --build --wait
 docker compose logs -f backend
 ```
 
-Wait for the backend's startup message, then use the experiment API at
+Once both services are healthy, use the experiment API at
 `http://localhost:8080`. The backend connects to `postgres:5432` on the
 Compose network. `POSTGRES_PORT` controls the published database port
 for host tools; `POSTGRES_HOST` is used when running Java locally.
 PostgreSQL must be healthy before the backend starts. The backend image
 runs as a non-root user.
+
+The backend health check polls `/actuator/health`. It reports healthy
+when the application and its PostgreSQL connection are available.
+The endpoint returns a status without exposing component details.
+Check container health with `docker compose ps`.
 
 Rebuild after changing backend code with `docker compose up -d --build`.
 Stop the stack with `docker compose down`; its database volume is kept.
