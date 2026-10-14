@@ -24,13 +24,11 @@ public class CommentService {
     public Comment createComment(String content, long authorId,
             long ticketId) {
         User author = userRepository.findById(authorId).orElse(null);
-
         if (author == null) {
             return null;
         }
 
         Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
-
         if (ticket == null) {
             return null;
         }

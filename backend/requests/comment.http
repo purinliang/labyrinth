@@ -1,0 +1,50 @@
+# Replace authorId and ticketId with existing user and ticket IDs.
+@authorId = 1
+@ticketId = 1
+
+### Create a comment (201 Created)
+# @name createComment
+POST http://localhost:8080/api/comments
+Content-Type: application/json
+
+{
+    "content": "The worker logs are attached.",
+    "authorId": {{authorId}},
+    "ticketId": {{ticketId}}
+}
+
+### Fetch the created comment (200 OK)
+GET {{createComment.response.headers.Location}}
+
+### Unknown comment (404 Not Found)
+GET http://localhost:8080/api/comments/0
+
+### Unknown author (404 Not Found)
+POST http://localhost:8080/api/comments
+Content-Type: application/json
+
+{
+    "content": "Content",
+    "authorId": 9223372036854775807,
+    "ticketId": {{ticketId}}
+}
+
+### Unknown ticket (404 Not Found)
+POST http://localhost:8080/api/comments
+Content-Type: application/json
+
+{
+    "content": "Content",
+    "authorId": {{authorId}},
+    "ticketId": 9223372036854775807
+}
+
+### Reject blank content (400 Bad Request)
+POST http://localhost:8080/api/comments
+Content-Type: application/json
+
+{
+    "content": "",
+    "authorId": {{authorId}},
+    "ticketId": {{ticketId}}
+}

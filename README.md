@@ -197,6 +197,18 @@ and missing, null, or nonpositive team IDs return HTTP 400.
 
 Request examples are in [ticket.http](backend/requests/ticket.http).
 
+## Comment API
+
+`POST /api/comments` accepts `content`, `authorId`, and `ticketId`.
+It returns HTTP 201 with a `Location` header for `GET /api/comments/{id}`.
+The response includes the comment's ID, content, author ID, ticket ID,
+and database-generated `createdAt`. Lookup returns HTTP 200 or HTTP 404
+for an unknown comment. Creation with an unknown author or ticket also
+returns HTTP 404. Missing, null, or blank content and missing, null, or
+nonpositive author/ticket IDs return HTTP 400.
+
+Request examples are in [comment.http](backend/requests/comment.http).
+
 ## Java formatting and lint
 
 Spotless uses the Eclipse JDT formatter with the shared profile in
