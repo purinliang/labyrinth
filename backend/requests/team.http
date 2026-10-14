@@ -1,0 +1,22 @@
+### Create a team (201 Created)
+# @name createTeam
+POST http://localhost:8080/api/teams
+Content-Type: application/json
+
+{
+    "name": "Backend"
+}
+
+### Fetch the created team (200 OK)
+GET {{createTeam.response.headers.Location}}
+
+### Unknown team (404 Not Found)
+GET http://localhost:8080/api/teams/0
+
+### Reject a blank name (400 Bad Request)
+POST http://localhost:8080/api/teams
+Content-Type: application/json
+
+{
+    "name": ""
+}

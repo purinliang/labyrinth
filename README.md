@@ -157,6 +157,17 @@ Flyway manages the schema; Hibernate validates it without modifying it.
 Execution is still planned. Request examples
 are in [experiments.http](backend/requests/experiments.http).
 
+## Team API
+
+`POST /api/teams` accepts a JSON body such as `{"name":"Backend"}`.
+It returns HTTP 201 with the team's ID and name, and a `Location` header
+pointing to `GET /api/teams/{id}`. Lookup returns HTTP 200 for an existing
+team or HTTP 404 for an unknown ID. Missing, null, or blank names return
+HTTP 400. Team names are not required to be unique.
+
+Teams are persisted in PostgreSQL. Request examples are available in
+[team.http](backend/requests/team.http).
+
 ## Java formatting and lint
 
 Spotless uses the Eclipse JDT formatter with the shared profile in
