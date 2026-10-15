@@ -38,7 +38,7 @@ class TicketServiceTest {
         assertNotNull(created);
         assertNotNull(created.getId());
         assertNotNull(created.getCreatedAt());
-        assertEquals(TicketStatus.OPEN, created.getStatus());
+        assertEquals(Ticket.Status.OPEN, created.getStatus());
         assertEquals(0, created.getVersion());
         assertEquals(teamId,
                 jdbc.queryForObject(
@@ -56,7 +56,7 @@ class TicketServiceTest {
         assertEquals("Demo", reloaded.getTitle());
         assertEquals("Ticket content", reloaded.getContent());
         assertEquals(teamId, reloaded.getCurrentTeam().getId());
-        assertEquals(TicketStatus.OPEN, reloaded.getStatus());
+        assertEquals(Ticket.Status.OPEN, reloaded.getStatus());
         assertEquals(0, reloaded.getVersion());
         assertEquals(created.getCreatedAt(), reloaded.getCreatedAt());
     }

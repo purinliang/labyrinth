@@ -63,7 +63,7 @@ public class TicketService {
                     "Version conflict");
         }
 
-        if (ticket.getStatus() == TicketStatus.CLOSED) {
+        if (ticket.getStatus() == Ticket.Status.CLOSED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Ticket already closed");
         }
@@ -87,7 +87,7 @@ public class TicketService {
                     "Version conflict");
         }
 
-        if (ticket.getStatus() == TicketStatus.OPEN) {
+        if (ticket.getStatus() == Ticket.Status.OPEN) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Ticket already open");
         }
@@ -116,7 +116,7 @@ public class TicketService {
         }
 
         // A closed ticket must be reopened before its ownership can change.
-        if (ticket.getStatus() == TicketStatus.CLOSED) {
+        if (ticket.getStatus() == Ticket.Status.CLOSED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Ticket already closed");
         }

@@ -72,7 +72,7 @@ class TicketPersistenceTest {
             Ticket reloaded = manager.find(Ticket.class, ticket.getId());
             assertEquals("Demo", reloaded.getTitle());
             assertEquals("Ticket content", reloaded.getContent());
-            assertEquals(TicketStatus.OPEN, reloaded.getStatus());
+            assertEquals(Ticket.Status.OPEN, reloaded.getStatus());
             assertEquals(0, reloaded.getVersion());
             assertEquals(ticket.getCreatedAt(), reloaded.getCreatedAt());
             assertEquals(team.getId(), reloaded.getCurrentTeam().getId());

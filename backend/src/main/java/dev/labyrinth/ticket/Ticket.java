@@ -36,7 +36,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "text", nullable = false)
-    private TicketStatus status;
+    private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "current_team_id", nullable = false)
@@ -57,7 +57,7 @@ public class Ticket {
     public Ticket(String title, String content, Team currentTeam) {
         this.title = title;
         this.content = content;
-        this.status = TicketStatus.OPEN;
+        this.status = Status.OPEN;
         this.currentTeam = currentTeam;
     }
 
@@ -73,7 +73,7 @@ public class Ticket {
         return content;
     }
 
-    public TicketStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -90,14 +90,18 @@ public class Ticket {
     }
 
     public void close() {
-        this.status = TicketStatus.CLOSED;
+        this.status = Status.CLOSED;
     }
 
     public void reopen() {
-        this.status = TicketStatus.OPEN;
+        this.status = Status.OPEN;
     }
 
     public void transferTo(Team targetTeam) {
         this.currentTeam = targetTeam;
+    }
+
+    public enum Status {
+        OPEN, CLOSED
     }
 }

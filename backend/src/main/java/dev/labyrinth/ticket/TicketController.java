@@ -94,7 +94,7 @@ public class TicketController {
     }
 
     public record TicketResponse(long id, String title, String content,
-            TicketStatus status, long currentTeamId, int version,
+            Ticket.Status status, long currentTeamId, int version,
             Instant createdAt) {
 
         public static TicketResponse from(Ticket ticket) {

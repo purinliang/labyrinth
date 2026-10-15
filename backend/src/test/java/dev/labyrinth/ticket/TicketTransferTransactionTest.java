@@ -76,7 +76,7 @@ class TicketTransferTransactionTest {
         assertEquals(fixture.source().getId(),
                 reloaded.getCurrentTeam().getId());
         assertEquals(0, reloaded.getVersion());
-        assertEquals(TicketStatus.OPEN, reloaded.getStatus());
+        assertEquals(Ticket.Status.OPEN, reloaded.getStatus());
         assertEquals(0L, commentCount(id));
     }
 
@@ -109,7 +109,7 @@ class TicketTransferTransactionTest {
                     transferWon ? fixture.target() : fixture.otherTarget();
             assertEquals(destination.getId(),
                     reloaded.getCurrentTeam().getId());
-            assertEquals(TicketStatus.OPEN, reloaded.getStatus());
+            assertEquals(Ticket.Status.OPEN, reloaded.getStatus());
             assertEquals(1L, commentCount(id));
             assertEquals(transferWon ? "First" : "Second",
                     jdbc.queryForObject(
@@ -121,7 +121,7 @@ class TicketTransferTransactionTest {
         } else {
             assertEquals(fixture.source().getId(),
                     reloaded.getCurrentTeam().getId());
-            assertEquals(TicketStatus.CLOSED, reloaded.getStatus());
+            assertEquals(Ticket.Status.CLOSED, reloaded.getStatus());
             assertEquals(0L, commentCount(id));
         }
     }

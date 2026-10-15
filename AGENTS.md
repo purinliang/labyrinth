@@ -26,3 +26,4 @@ tickets, and comments, backed by PostgreSQL and Flyway migrations.
 - Keep services focused on the requested operations.
 - Declare request and response DTOs as public nested records in their
   controller.
+- Keep entity-specific status enums inside their entity as `Status`.

@@ -73,7 +73,7 @@ class TicketStatusApiTest {
         mvc.perform(MockMvcRequestBuilders.get("/api/tickets/{id}", id))
                 .andExpect(MockMvcResultMatchers.content().json(reopened));
         Ticket reloaded = service.getTicket(id);
-        assertEquals(TicketStatus.OPEN, reloaded.getStatus());
+        assertEquals(Ticket.Status.OPEN, reloaded.getStatus());
         assertEquals(2, reloaded.getVersion());
         assertEquals(original.getTitle(), reloaded.getTitle());
         assertEquals(original.getContent(), reloaded.getContent());
