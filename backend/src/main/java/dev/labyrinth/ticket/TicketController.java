@@ -1,8 +1,13 @@
 package dev.labyrinth.ticket;
 
 import java.net.URI;
+import java.time.Instant;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,5 +78,30 @@ public class TicketController {
                 request.expectedVersion());
 
         return ResponseEntity.ok(TicketResponse.from(ticket));
+    }
+
+    public record CreateTicketRequest(@NotBlank String title,
+            @NotBlank String content, @NotNull @Positive Long currentTeamId) {
+    }
+
+    public record ChangeTicketStatusRequest(
+            @NotNull @PositiveOrZero Integer expectedVersion) {
+    }
+
+    public record TransferTicketRequest(@NotNull @Positive Long targetTeamId,
+            @NotNull @Positive Long authorId, @NotBlank String comment,
+            @NotNull @PositiveOrZero Integer expectedVersion) {
+    }
+
+    public record TicketResponse(long id, String title, String content,
+            TicketStatus status, long currentTeamId, int version,
+            Instant createdAt) {
+
+        public static TicketResponse from(Ticket ticket) {
+            return new TicketResponse(ticket.getId(), ticket.getTitle(),
+                    ticket.getContent(), ticket.getStatus(),
+                    ticket.getCurrentTeam().getId(), ticket.getVersion(),
+                    ticket.getCreatedAt());
+        }
     }
 }

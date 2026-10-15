@@ -3,6 +3,7 @@ package dev.labyrinth.team;
 import java.net.URI;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,5 +44,15 @@ public class TeamController {
         }
 
         return ResponseEntity.ok(TeamResponse.from(team));
+    }
+
+    public record CreateTeamRequest(@NotBlank String name) {
+    }
+
+    public record TeamResponse(long id, String name) {
+
+        public static TeamResponse from(Team team) {
+            return new TeamResponse(team.getId(), team.getName());
+        }
     }
 }

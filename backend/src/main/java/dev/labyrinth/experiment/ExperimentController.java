@@ -3,6 +3,7 @@ package dev.labyrinth.experiment;
 import java.net.URI;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,5 +45,17 @@ public class ExperimentController {
         }
 
         return ResponseEntity.ok(ExperimentResponse.from(experiment));
+    }
+
+    public record CreateExperimentRequest(@NotBlank String name) {
+    }
+
+    public record ExperimentResponse(long id, String name,
+            ExperimentStatus status) {
+
+        public static ExperimentResponse from(Experiment experiment) {
+            return new ExperimentResponse(experiment.getId(),
+                    experiment.getName(), experiment.getStatus());
+        }
     }
 }

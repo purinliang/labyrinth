@@ -21,3 +21,5 @@ Labyrinth is a scientific research platform with a Java Spring Boot backend, a R
   translate that result into HTTP 404. Document nullable service results.
 - Keep services focused on create/get operations until additional operations
   are requested.
+- Declare request and response DTOs as public nested records in their
+  controller.

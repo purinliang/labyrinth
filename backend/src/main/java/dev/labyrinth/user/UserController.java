@@ -3,6 +3,9 @@ package dev.labyrinth.user;
 import java.net.URI;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,5 +49,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(UserResponse.from(user));
+    }
+
+    public record CreateUserRequest(@NotBlank String name,
+            @NotNull @Positive Long teamId) {
+    }
+
+    public record UserResponse(long id, String name, long teamId) {
+
+        public static UserResponse from(User user) {
+            return new UserResponse(user.getId(), user.getName(),
+                    user.getTeam().getId());
+        }
     }
 }

@@ -1,8 +1,12 @@
 package dev.labyrinth.comment;
 
 import java.net.URI;
+import java.time.Instant;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,5 +51,20 @@ public class CommentController {
         }
 
         return ResponseEntity.ok(CommentResponse.from(comment));
+    }
+
+    public record CreateCommentRequest(@NotBlank String content,
+            @NotNull @Positive Long authorId,
+            @NotNull @Positive Long ticketId) {
+    }
+
+    public record CommentResponse(long id, String content, long authorId,
+            long ticketId, Instant createdAt) {
+
+        public static CommentResponse from(Comment comment) {
+            return new CommentResponse(comment.getId(), comment.getContent(),
+                    comment.getAuthor().getId(), comment.getTicket().getId(),
+                    comment.getCreatedAt());
+        }
     }
 }
