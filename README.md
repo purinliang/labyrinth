@@ -1,37 +1,18 @@
 # Labyrinth
 
-A scientific research platform for exploring hyperparameter spaces through grid search and live visualization.
+A Spring Boot backend for managing teams, users, tickets, and comments.
+Tickets support closing, reopening, and transfers between teams, with
+optimistic locking to prevent lost updates. Transfers save the team
+change and its comment in one PostgreSQL transaction.
 
-Researchers submit a Python script and a hyperparameter grid. Labyrinth runs one trial per parameter combination, tracks progress through a Java Spring backend, and pushes live updates to a web frontend for monitoring and result comparison.
-
-## Planned workflow
-
-1. Submit a Python script and hyperparameter values.
-2. Expand the grid into trials and execute them in isolated Python workers.
-3. Store trial parameters, status, logs, and metrics; stream progress to the frontend.
-4. When the experiment finishes, publish a completion event through RabbitMQ.
-5. Future downstream services consume that event to send email or other notifications.
-
-## Architecture
-
-![Labyrinth Architecture](docs/assets/architecture.png)
-
-## Planned project structure
+## Project structure
 
 ```text
 labyrinth/
-├── frontend/                  # React + TypeScript
-├── backend/                   # Java + Spring Boot
-├── worker/                    # Python
-├── examples/                  # Research programs
-├── contracts/                 # Shared schemas
-│
-├── infra/
-│   ├── postgres/
-│   ├── rabbitmq/
-│   └── docker/
-│
-├── docs/
+├── backend/
+│   ├── config/                 # Java formatting and lint rules
+│   ├── requests/               # HTTP request examples
+│   └── src/                    # Application, migrations, and tests
 ├── compose.yaml
 ├── .env.example
 ├── AGENTS.md
@@ -41,12 +22,11 @@ labyrinth/
 ## Status
 
 The project is in early development. The Spring Boot backend provides
-creation and lookup for experiments, teams, users, tickets, and comments
-through JPA.
+creation and lookup for teams, users, tickets, and comments through JPA,
+plus ticket status changes and transfers.
 Local PostgreSQL is available through Docker Compose. The backend
 connects to PostgreSQL and applies Flyway schema migrations on startup.
-Records are persisted in PostgreSQL. Execution, the frontend,
-workers, and RabbitMQ are still planned.
+Records are persisted in PostgreSQL.
 
 ## Local PostgreSQL
 
@@ -83,7 +63,7 @@ docker compose down
 
 Database credentials initialize a new volume only. Changing `.env`
 does not update the password of an existing database. The backend
-persists experiment records in PostgreSQL through Spring Data JPA.
+persists records in PostgreSQL through Spring Data JPA.
 
 ## Run with Docker Compose
 
@@ -94,7 +74,7 @@ docker compose up -d --build --wait
 docker compose logs -f backend
 ```
 
-Once both services are healthy, use the experiment API at
+Once both services are healthy, use the REST API at
 `http://localhost:8080`. The backend connects to `postgres:5432` on the
 Compose network. `POSTGRES_PORT` controls the published database port
 for host tools; `POSTGRES_HOST` is used when running Java locally.
@@ -134,34 +114,21 @@ versioned migrations from `backend/src/main/resources/db/migration`.
 Do not edit a migration after applying it to a persistent database;
 add a new version instead.
 
-Create an experiment:
+Create a team:
 
 ```sh
-curl -i http://localhost:8080/api/experiments \
+curl -i http://localhost:8080/api/teams \
   -H 'Content-Type: application/json' \
   -d '{"name":"Demo"}'
 ```
 
-The response is HTTP 201 with the experiment data and a `Location`
-header for retrieving it. See the experiment API below for details.
+The response is HTTP 201 with the team data and a `Location` header
+for retrieving it. See the team API below for details.
 
 Build and run available tests with `mvn -f backend/pom.xml verify`.
 
 Spring Boot DevTools is enabled for local development and is excluded
 from the packaged application.
-
-## Experiment API
-
-`POST /api/experiments` accepts a JSON body such as `{"name":"Demo"}`.
-It returns HTTP 201 with an ID, name, `PENDING` status, and a `Location`
-header pointing to `GET /api/experiments/{id}`. Lookup returns HTTP 200
-for an existing experiment or HTTP 404 for an unknown ID. Missing,
-null, or blank names return HTTP 400.
-
-Experiments are stored in PostgreSQL and survive backend restarts.
-Flyway manages the schema; Hibernate validates it without modifying it.
-Execution is still planned. Request examples
-are in [experiments.http](backend/requests/experiments.http).
 
 ## Team API
 
@@ -269,16 +236,17 @@ current user. Testcontainers starts an isolated PostgreSQL 17 instance
 on a random port; no `.env` or existing database is used. Spring manages
 the container lifecycle and supplies its connection details to the
 test application. Flyway runs the production migrations and Hibernate
-validates the resulting schema. API tests cover experiment, team, user,
-ticket, and comment creation and lookup, `Location` headers with a
+validates the resulting schema. API tests cover team, user, ticket, and
+comment creation and lookup, `Location` headers with a
 context path, invalid request fields and IDs, and missing records or
-references. Experiment tests also cover malformed JSON. Health tests
-check the Actuator endpoint.
+references. Ticket status and transfer tests also cover malformed JSON.
+Health tests check the Actuator endpoint.
 They use returned IDs rather than assuming test execution order.
 
-Persistence tests check generated IDs, independent records with duplicate
-names, reloads through a fresh JPA persistence context, committed SQL data,
-and repeat Flyway execution without data loss. Ticket and comment
+Migration tests check fresh PostgreSQL databases, upgrades from version
+2, retained ticket data, and repeat Flyway execution without data loss.
+Persistence tests check committed SQL data, reloads through fresh JPA
+persistence contexts, and optimistic locking. Ticket and comment
 service tests cover creation, lookup, missing references, persisted
 relationships, and database-generated timestamps. Ticket status tests
 cover close/reopen transitions, committed versions, rejected requests,

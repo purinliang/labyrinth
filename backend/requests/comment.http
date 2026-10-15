@@ -8,7 +8,7 @@ POST http://localhost:8080/api/comments
 Content-Type: application/json
 
 {
-    "content": "The worker logs are attached.",
+    "content": "The service logs are attached.",
     "authorId": {{authorId}},
     "ticketId": {{ticketId}}
 }

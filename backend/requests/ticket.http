@@ -10,8 +10,8 @@ POST http://localhost:8080/api/tickets
 Content-Type: application/json
 
 {
-    "title": "Experiment failed",
-    "content": "Investigate the worker logs.",
+    "title": "Service unavailable",
+    "content": "Investigate the service logs.",
     "currentTeamId": {{currentTeamId}}
 }
 
@@ -72,6 +72,6 @@ Content-Type: application/json
 {
     "targetTeamId": {{targetTeamId}},
     "authorId": {{authorId}},
-    "comment": "Please investigate the worker logs.",
+    "comment": "Please investigate the service logs.",
     "expectedVersion": 2
 }
