@@ -96,4 +96,8 @@ public class Ticket {
     public void reopen() {
         this.status = TicketStatus.OPEN;
     }
+
+    public void transferTo(Team targetTeam) {
+        this.currentTeam = targetTeam;
+    }
 }

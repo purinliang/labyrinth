@@ -64,4 +64,14 @@ public class TicketController {
 
         return ResponseEntity.ok(TicketResponse.from(ticket));
     }
+
+    @PostMapping("/{id}/transfer")
+    public ResponseEntity<TicketResponse> transferTicket(@PathVariable long id,
+            @Valid @RequestBody TransferTicketRequest request) {
+        Ticket ticket = service.transferTicket(id, request.targetTeamId(),
+                request.authorId(), request.comment(),
+                request.expectedVersion());
+
+        return ResponseEntity.ok(TicketResponse.from(ticket));
+    }
 }

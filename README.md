@@ -203,6 +203,19 @@ status and incremented version. An unknown ticket returns HTTP 404;
 a stale version, concurrent update, or already requested status returns
 HTTP 409. Missing, null, or negative versions return HTTP 400.
 
+`POST /api/tickets/{id}/transfer` accepts `targetTeamId`, `authorId`,
+`comment`, and `expectedVersion`. Only an author belonging to the current
+team can transfer an open ticket to a different existing team. The
+transfer comment and team assignment commit together; the response is
+HTTP 200 with the updated ticket and incremented version.
+
+Missing tickets, authors, or teams return HTTP 404. An author outside
+the current team returns HTTP 403. Closed tickets, transfers to the same
+team, stale versions, and concurrent updates return HTTP 409. Missing,
+null, or nonpositive IDs, blank comments, and missing, null, or negative
+versions return HTTP 400. Failed transfers leave no transfer comment
+and do not change the ticket.
+
 Request examples are in [ticket.http](backend/requests/ticket.http).
 
 ## Comment API
@@ -269,6 +282,8 @@ and repeat Flyway execution without data loss. Ticket and comment
 service tests cover creation, lookup, missing references, persisted
 relationships, and database-generated timestamps. Ticket status tests
 cover close/reopen transitions, committed versions, rejected requests,
-and optimistic locking under concurrent transactions.
+and optimistic locking under concurrent transactions. Transfer tests
+check team membership, validation, comment persistence, rollback after
+writes, and concurrent transfers or status changes.
 
 For a faster test-only run, use `mvn -f backend/pom.xml test`.

@@ -46,4 +46,9 @@ public class User {
     public Team getTeam() {
         return team;
     }
+
+    public boolean belongsTo(Team team) {
+        return this.team != null && team != null && this.team.getId() != null
+                && this.team.getId().equals(team.getId());
+    }
 }

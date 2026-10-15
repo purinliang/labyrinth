@@ -1,5 +1,8 @@
 # Replace currentTeamId with an existing team's ID.
 @currentTeamId = 1
+# Use a different existing team and an author belonging to currentTeamId.
+@targetTeamId = 2
+@authorId = 1
 
 ### Create a ticket (201 Created)
 # @name createTicket
@@ -60,4 +63,15 @@ Content-Type: application/json
 
 {
     "expectedVersion": 0
+}
+
+### Transfer the reopened ticket (200 OK; use its current version)
+POST {{createTicket.response.headers.Location}}/transfer
+Content-Type: application/json
+
+{
+    "targetTeamId": {{targetTeamId}},
+    "authorId": {{authorId}},
+    "comment": "Please investigate the worker logs.",
+    "expectedVersion": 2
 }
