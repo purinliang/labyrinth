@@ -39,6 +39,13 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Springdoc OpenAPI: REST API documentation and Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
         <!-- Spring Boot DevTools: Restart during development -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
