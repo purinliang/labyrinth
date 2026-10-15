@@ -92,7 +92,11 @@ class TicketApiTest {
     @Test
     void returnsNotFoundForUnknownTicket() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/api/tickets/0"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Ticket not found"));
     }
 
     @Test
@@ -102,7 +106,11 @@ class TicketApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"title\":\"Demo\",\"content\":\"Content\","
                         + "\"currentTeamId\":9223372036854775807}"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Team not found"));
         assertEquals(before, ticketCount());
     }
 

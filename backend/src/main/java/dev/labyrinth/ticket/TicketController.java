@@ -33,32 +33,23 @@ public class TicketController {
             @Valid @RequestBody CreateTicketRequest request) {
         Ticket ticket = service.createTicket(request.title(),
                 request.content(), request.currentTeamId());
-        if (ticket == null) {
-            return ResponseEntity.notFound().build();
-        }
 
-        TicketResponse response = TicketResponse.from(ticket);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(ticket.getId()).toUri();
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location)
+                .body(TicketResponse.from(ticket));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketResponse> getTicket(@PathVariable long id) {
-        Ticket ticket = service.getTicket(id);
-        if (ticket == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(TicketResponse.from(ticket));
+    public TicketResponse getTicket(@PathVariable long id) {
+        return TicketResponse.from(service.getTicket(id));
     }
 
     @PostMapping("/{id}/close")
     public ResponseEntity<TicketResponse> closeTicket(@PathVariable long id,
             @Valid @RequestBody ChangeTicketStatusRequest request) {
         Ticket ticket = service.closeTicket(id, request.expectedVersion());
-
         return ResponseEntity.ok(TicketResponse.from(ticket));
     }
 
@@ -66,7 +57,6 @@ public class TicketController {
     public ResponseEntity<TicketResponse> reopenTicket(@PathVariable long id,
             @Valid @RequestBody ChangeTicketStatusRequest request) {
         Ticket ticket = service.reopenTicket(id, request.expectedVersion());
-
         return ResponseEntity.ok(TicketResponse.from(ticket));
     }
 
@@ -76,7 +66,6 @@ public class TicketController {
         Ticket ticket = service.transferTicket(id, request.targetTeamId(),
                 request.authorId(), request.comment(),
                 request.expectedVersion());
-
         return ResponseEntity.ok(TicketResponse.from(ticket));
     }
 

@@ -100,7 +100,9 @@ class TicketStatusApiTest {
                 .post("/api/tickets/{id}/{action}", ticket.getId(), action)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"expectedVersion\":" + staleVersion + "}"))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Version conflict"));
         assertEquals(before, getTicketBody(ticket.getId()));
     }
 
@@ -119,7 +121,11 @@ class TicketStatusApiTest {
                 .post("/api/tickets/{id}/{action}", ticket.getId(), action)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"expectedVersion\":" + version + "}"))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value(action.equals("close")
+                                ? "Ticket already closed"
+                                : "Ticket already open"));
         assertEquals(before, getTicketBody(ticket.getId()));
     }
 
@@ -130,7 +136,9 @@ class TicketStatusApiTest {
                 MockMvcRequestBuilders.post("/api/tickets/0/{action}", action)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"expectedVersion\":0}"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Ticket not found"));
     }
 
     @ParameterizedTest

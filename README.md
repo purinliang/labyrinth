@@ -197,6 +197,22 @@ nonpositive author/ticket IDs return HTTP 400.
 
 Request examples are in [comment.http](backend/requests/comment.http).
 
+## Error responses
+
+Services reject missing records or required references by throwing a
+`ResponseStatusException` with HTTP 404 and a clear reason. The global
+exception handler preserves the status and returns that reason in JSON.
+Controllers map successful service results to response DTOs. For example,
+a ticket business error can return:
+
+```json
+{"message":"Ticket already closed"}
+```
+
+Validation failures return `{"message":"Invalid argument"}`. Concurrent
+update conflicts return `{"message":"Version conflict"}`. The frontend
+can read the `message` field to display these errors.
+
 ## Java formatting and lint
 
 Spotless uses the Eclipse JDT formatter with the shared profile in
@@ -220,9 +236,9 @@ during Maven's `validate` phase; Spotless checks run during `verify`.
 Use these commands as the source of truth for formatting.
 
 Put a null check directly after its lookup or service call, with no blank
-line in between. The formatter preserves this layout. Services return
-`null` for missing records or required references, and controllers map
-that result to HTTP 404. Nullable service results are documented.
+line in between. The formatter preserves this layout. Service comments
+document missing-record exceptions and business rejection rules; comments
+on transaction guards explain why those rules must be enforced.
 
 ## Automated tests
 

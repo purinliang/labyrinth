@@ -32,25 +32,17 @@ public class CommentController {
             @Valid @RequestBody CreateCommentRequest request) {
         Comment comment = service.createComment(request.content(),
                 request.authorId(), request.ticketId());
-        if (comment == null) {
-            return ResponseEntity.notFound().build();
-        }
 
-        CommentResponse response = CommentResponse.from(comment);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(comment.getId()).toUri();
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location)
+                .body(CommentResponse.from(comment));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommentResponse> getComment(@PathVariable long id) {
-        Comment comment = service.getComment(id);
-        if (comment == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(CommentResponse.from(comment));
+    public CommentResponse getComment(@PathVariable long id) {
+        return CommentResponse.from(service.getComment(id));
     }
 
     public record CreateCommentRequest(@NotBlank String content,

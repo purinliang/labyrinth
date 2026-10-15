@@ -1,6 +1,8 @@
 package dev.labyrinth.comment;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import dev.labyrinth.ticket.Ticket;
 import dev.labyrinth.ticket.TicketRepository;
@@ -22,28 +24,27 @@ public class CommentService {
     }
 
     /**
-     * Returns the saved comment, or null if the author or ticket does not
-     * exist.
+     * Creates a comment; rejects a missing author or ticket with HTTP 404.
      */
     public Comment createComment(String content, long authorId,
             long ticketId) {
-        User author = userRepository.findById(authorId).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        User author = userRepository.findById(authorId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Author not found"));
 
-        Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
-        if (ticket == null) {
-            return null;
-        }
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Ticket not found"));
 
         return repository.save(new Comment(content, author, ticket));
     }
 
     /**
-     * Returns the comment, or null when it does not exist.
+     * Returns the comment; rejects a missing comment with HTTP 404.
      */
     public Comment getComment(long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Comment not found"));
     }
 }

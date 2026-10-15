@@ -30,25 +30,16 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(
             @Valid @RequestBody CreateUserRequest request) {
         User user = service.createUser(request.name(), request.teamId());
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
 
-        UserResponse response = UserResponse.from(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(user.getId()).toUri();
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location).body(UserResponse.from(user));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable long id) {
-        User user = service.getUser(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(UserResponse.from(user));
+    public UserResponse getUser(@PathVariable long id) {
+        return UserResponse.from(service.getUser(id));
     }
 
     public record CreateUserRequest(@NotBlank String name,

@@ -30,22 +30,21 @@ public class TicketService {
     }
 
     /**
-     * Returns the saved ticket, or null if the team does not exist.
+     * Creates a ticket; rejects a missing team with HTTP 404.
      */
     public Ticket createTicket(String title, String content, long teamId) {
-        Team team = teamRepository.findById(teamId).orElse(null);
-        if (team == null) {
-            return null;
-        }
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Team not found"));
 
         return repository.save(new Ticket(title, content, team));
     }
 
     /**
-     * Returns the ticket, or null when it does not exist.
+     * Returns the ticket; rejects a missing ticket with HTTP 404.
      */
     public Ticket getTicket(long id) {
-        return repository.findById(id).orElse(null);
+        return requireTicket(id);
     }
 
     /**
@@ -54,14 +53,8 @@ public class TicketService {
      */
     @Transactional
     public Ticket closeTicket(long id, int expectedVersion) {
-        Ticket ticket = repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Ticket not found"));
-
-        if (ticket.getVersion() != expectedVersion) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Version conflict");
-        }
+        Ticket ticket = requireTicket(id);
+        checkVersion(ticket, expectedVersion);
 
         if (ticket.getStatus() == Ticket.Status.CLOSED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -78,14 +71,8 @@ public class TicketService {
      */
     @Transactional
     public Ticket reopenTicket(long id, int expectedVersion) {
-        Ticket ticket = repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Ticket not found"));
-
-        if (ticket.getVersion() != expectedVersion) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Version conflict");
-        }
+        Ticket ticket = requireTicket(id);
+        checkVersion(ticket, expectedVersion);
 
         if (ticket.getStatus() == Ticket.Status.OPEN) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -104,16 +91,8 @@ public class TicketService {
     @Transactional
     public Ticket transferTicket(long id, long targetTeamId, long authorId,
             String commentContent, int expectedVersion) {
-        // Load a managed ticket so Hibernate tracks the team and version.
-        Ticket ticket = repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Ticket not found"));
-
-        // Reject decisions based on an outdated team or ticket status.
-        if (ticket.getVersion() != expectedVersion) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Version conflict");
-        }
+        Ticket ticket = requireTicket(id);
+        checkVersion(ticket, expectedVersion);
 
         // A closed ticket must be reopened before its ownership can change.
         if (ticket.getStatus() == Ticket.Status.CLOSED) {
@@ -121,7 +100,6 @@ public class TicketService {
                     "Ticket already closed");
         }
 
-        // The transfer comment must reference an existing author.
         User author = userRepository.findById(authorId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Author not found"));
@@ -132,7 +110,6 @@ public class TicketService {
                     "Author does not belong to the current team");
         }
 
-        // Resolve the destination before writing either the comment or ticket.
         Team targetTeam = teamRepository.findById(targetTeamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Target team not found"));
@@ -143,12 +120,26 @@ public class TicketService {
                     "Ticket already belongs to the target team");
         }
 
-        // Join this transaction so a failed ticket update removes the comment.
         commentRepository.save(new Comment(commentContent, author, ticket));
 
         // Dirty checking updates the team and version at commit. A version
         // conflict rolls back both writes, including the transfer comment.
         ticket.transferTo(targetTeam);
         return ticket;
+    }
+
+    // Share missing-ticket handling across lookups and state changes.
+    private Ticket requireTicket(long id) {
+        return repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Ticket not found"));
+    }
+
+    // Reject stale client decisions; @Version also guards commit-time races.
+    private void checkVersion(Ticket ticket, int expectedVersion) {
+        if (ticket.getVersion() != expectedVersion) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Version conflict");
+        }
     }
 }

@@ -29,21 +29,15 @@ public class TeamController {
             @Valid @RequestBody CreateTeamRequest request) {
         Team team = service.createTeam(request.name());
 
-        TeamResponse response = TeamResponse.from(team);
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(team.getId()).toUri();
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location).body(TeamResponse.from(team));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamResponse> getTeam(@PathVariable long id) {
-        Team team = service.getTeam(id);
-        if (team == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(TeamResponse.from(team));
+    public TeamResponse getTeam(@PathVariable long id) {
+        return TeamResponse.from(service.getTeam(id));
     }
 
     public record CreateTeamRequest(@NotBlank String name) {

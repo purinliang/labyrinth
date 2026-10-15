@@ -82,7 +82,11 @@ class UserApiTest {
     @Test
     void returnsNotFoundForUnknownUser() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/api/users/0"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("User not found"));
     }
 
     @Test
@@ -92,7 +96,11 @@ class UserApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Researcher\","
                         + "\"teamId\":9223372036854775807}"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Team not found"));
         assertEquals(before, userCount());
     }
 

@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import dev.labyrinth.PostgresTestConfiguration;
 import dev.labyrinth.team.Team;
@@ -13,7 +14,7 @@ import dev.labyrinth.team.TeamRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -65,14 +66,20 @@ class TicketServiceTest {
     void doesNotCreateTicketForUnknownTeam() {
         Long before = jdbc.queryForObject("SELECT COUNT(*) FROM tickets",
                 Long.class);
-        assertNull(service.createTicket("Missing team", "Content",
-                Long.MAX_VALUE));
+        var exception = assertThrows(ResponseStatusException.class,
+                () -> service.createTicket("Missing team", "Content",
+                        Long.MAX_VALUE));
+        assertEquals(404, exception.getStatusCode().value());
+        assertEquals("Team not found", exception.getReason());
         assertEquals(before, jdbc
                 .queryForObject("SELECT COUNT(*) FROM tickets", Long.class));
     }
 
     @Test
-    void returnsNullForUnknownTicket() {
-        assertNull(service.getTicket(Long.MAX_VALUE));
+    void rejectsUnknownTicket() {
+        var exception = assertThrows(ResponseStatusException.class,
+                () -> service.getTicket(Long.MAX_VALUE));
+        assertEquals(404, exception.getStatusCode().value());
+        assertEquals("Ticket not found", exception.getReason());
     }
 }

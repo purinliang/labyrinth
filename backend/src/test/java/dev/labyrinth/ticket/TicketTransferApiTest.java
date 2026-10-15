@@ -131,12 +131,26 @@ class TicketTransferApiTest {
             default -> throw new IllegalArgumentException(scenario);
         }
         String before = getTicketBody(fixture.ticket().getId());
+        String expectedMessage = switch (scenario) {
+            case "ticket" -> "Ticket not found";
+            case "author" -> "Author not found";
+            case "target" -> "Target team not found";
+            case "outsider" -> "Author does not belong to the current team";
+            case "same" -> "Ticket already belongs to the target team";
+            case "closed" -> "Ticket already closed";
+            case "stale" -> "Version conflict";
+            default -> throw new IllegalArgumentException(scenario);
+        };
         mvc.perform(MockMvcRequestBuilders
                 .post("/api/tickets/{id}/transfer", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body(Long.toString(targetId), Long.toString(authorId),
                         "\"Note\"", Integer.toString(version))))
-                .andExpect(MockMvcResultMatchers.status().is(expectedStatus));
+                .andExpect(MockMvcResultMatchers.status().is(expectedStatus))
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value(expectedMessage));
         assertEquals(before, getTicketBody(fixture.ticket().getId()));
         assertEquals(0L, commentCount(fixture.ticket().getId()));
     }

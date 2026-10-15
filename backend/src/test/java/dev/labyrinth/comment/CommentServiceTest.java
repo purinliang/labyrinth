@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import dev.labyrinth.PostgresTestConfiguration;
 import dev.labyrinth.team.Team;
@@ -17,7 +18,7 @@ import dev.labyrinth.user.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -78,8 +79,11 @@ class CommentServiceTest {
         Team team = teams.save(new Team("Missing author team"));
         Ticket ticket = tickets.save(new Ticket("Demo", "Content", team));
         Long before = commentCount();
-        assertNull(service.createComment("Content", Long.MAX_VALUE,
-                ticket.getId()));
+        var exception = assertThrows(ResponseStatusException.class,
+                () -> service.createComment("Content", Long.MAX_VALUE,
+                        ticket.getId()));
+        assertEquals(404, exception.getStatusCode().value());
+        assertEquals("Author not found", exception.getReason());
         assertEquals(before, commentCount());
     }
 
@@ -88,14 +92,20 @@ class CommentServiceTest {
         Team team = teams.save(new Team("Missing ticket team"));
         User author = users.save(new User("Researcher", team));
         Long before = commentCount();
-        assertNull(service.createComment("Content", author.getId(),
-                Long.MAX_VALUE));
+        var exception = assertThrows(ResponseStatusException.class,
+                () -> service.createComment("Content", author.getId(),
+                        Long.MAX_VALUE));
+        assertEquals(404, exception.getStatusCode().value());
+        assertEquals("Ticket not found", exception.getReason());
         assertEquals(before, commentCount());
     }
 
     @Test
-    void returnsNullForUnknownComment() {
-        assertNull(service.getComment(Long.MAX_VALUE));
+    void rejectsUnknownComment() {
+        var exception = assertThrows(ResponseStatusException.class,
+                () -> service.getComment(Long.MAX_VALUE));
+        assertEquals(404, exception.getStatusCode().value());
+        assertEquals("Comment not found", exception.getReason());
     }
 
     private Long commentCount() {

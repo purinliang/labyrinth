@@ -21,8 +21,11 @@ tickets, and comments, backed by PostgreSQL and Flyway migrations.
   below 80 columns.
 - Put a null check directly after the lookup or service call, without a blank
   line between them.
-- Preserve each operation's missing-record behavior and map it to HTTP 404.
-  Document nullable service results.
+- Services throw ResponseStatusException with a clear reason for missing
+  records or required references; do not return null to signal HTTP 404.
+- The global exception handler owns error JSON and preserves the status and
+  reason. Controllers map successful results to response DTOs.
+- Document service rejection rules and the reason for transaction guards.
 - Keep services focused on the requested operations.
 - Declare request and response DTOs as public nested records in their
   controller.

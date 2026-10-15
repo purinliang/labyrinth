@@ -87,7 +87,11 @@ class TeamApiTest {
     @Test
     void returnsNotFoundForUnknownTeam() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/api/teams/0"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Team not found"));
     }
 
     @ParameterizedTest

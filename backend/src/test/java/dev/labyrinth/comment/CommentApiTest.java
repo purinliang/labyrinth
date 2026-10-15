@@ -107,7 +107,11 @@ class CommentApiTest {
     @Test
     void returnsNotFoundForUnknownComment() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/api/comments/0"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Comment not found"));
     }
 
     @Test
@@ -120,7 +124,11 @@ class CommentApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"content\":\"Content\",\"authorId\":"
                         + Long.MAX_VALUE + ",\"ticketId\":" + ticketId + "}"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Author not found"));
         assertEquals(before, commentCount());
     }
 
@@ -133,7 +141,11 @@ class CommentApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"content\":\"Content\",\"authorId\":" + authorId
                         + ",\"ticketId\":" + Long.MAX_VALUE + "}"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Ticket not found"));
         assertEquals(before, commentCount());
     }
 
