@@ -4,6 +4,19 @@ backend/target/
 
 # IDE
 .vscode/
+.idea/
+*.iml
+
+# Android and Gradle
+frontend/android/.gradle/
+frontend/android/.kotlin/
+frontend/android/**/build/
+frontend/android/local.properties
+frontend/android/captures/
+frontend/android/.externalNativeBuild/
+frontend/android/.cxx/
+*.jks
+*.keystore
 
 # Local environment
 **/.env

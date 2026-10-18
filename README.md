@@ -13,6 +13,8 @@ labyrinth/
 │   ├── config/                 # Java formatting and lint rules
 │   ├── requests/               # HTTP request examples
 │   └── src/                    # Application, migrations, and tests
+├── frontend/
+│   └── android/                # Kotlin Android application
 ├── compose.yaml
 ├── .env.example
 ├── AGENTS.md
@@ -20,6 +22,10 @@ labyrinth/
 ```
 
 ## Status
+
+The Android starter lives in [`frontend/android`](frontend/android/README.md).
+Open that directory as a separate Android Studio project to build and run
+the welcome screen.
 
 The project is in early development. The Spring Boot backend provides
 creation and lookup for teams, users, tickets, and comments through JPA,
